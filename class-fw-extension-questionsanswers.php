@@ -174,7 +174,7 @@ class FW_Extension_QuestionsAnswers extends FW_Extension {
 
         register_post_type('sp_questions', array(
             'labels' => array(
-                'name' => esc_html__('Q&A', 'listingo'),
+                'name' => esc_html__('Consult Q&A', 'listingo'),
                 'all_items' => esc_html__('Questions', 'listingo'),
                 'singular_name' => esc_html__('Question', 'listingo'),
                 'add_new' => esc_html__('New Question', 'listingo'),
