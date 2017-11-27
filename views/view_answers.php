@@ -1,0 +1,87 @@
+<?php
+
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+global $wp_query, $current_user;
+$query_object = $wp_query->get_queried_object();
+
+$ques_id = $query_object->ID;
+$q_args = array(
+    'post_type'   => 'sp_answers',
+    'post_status' => 'publish',
+	'post_parent' => $ques_id,
+    'posts_per_page' => -1,
+    'order' => 'DESC',
+);
+
+
+$q_query = new WP_Query($q_args);
+
+?>
+<div class="tg-companyfeaturebox tg-answers">
+	<div class="tg-companyfeaturetitle">
+		<h3><?php esc_html_e('Answers', 'listingo'); ?></h3>
+	</div>
+	<?php if ($q_query->have_posts()) {?>
+		<div class="tg-widgetrelatedposts sp-provider-articles">
+			<div class="questions-area tg-haslayout">
+			   <?php
+				while ($q_query->have_posts()) : $q_query->the_post();
+					global $post;
+					$answer_user_id = get_post_meta($post->ID, 'answer_user_id', true);				   
+					$user_avatar = apply_filters(
+						'listingo_get_media_filter', 
+						listingo_get_user_avatar(array('width' => 100, 'height' => 100), $answer_user_id), 
+						array('width' => 100, 'height' => 100) //size width,height
+					);
+	
+					$user_name = listingo_get_username($answer_user_id);
+					$author_url	= get_author_posts_url($answer_user_id);
+					?>
+					<div class="tg-answerholder">
+						<figure class="tg-docimg">
+							<?php if (apply_filters('listingo_do_check_user_type', $answer_user_id) === true){?>
+								<a target="_blank" href="<?php echo esc_url($author_url); ?>"><img src="<?php echo esc_attr( $user_avatar );?>" alt="<?php echo esc_attr( $user_name );?>"></a>
+							<?php } else{?>
+								<img src="<?php echo esc_attr( $user_avatar );?>" alt="<?php echo esc_attr( $user_name );?>">
+							<?php }?>
+						</figure>
+						<div class="tg-question">
+							<div class="tg-questioncontent">
+								<?php if (apply_filters('listingo_do_check_user_type', $answer_user_id) === true){?>
+									<h4><a target="_blank" href="<?php echo esc_url($author_url); ?>"><?php echo esc_attr( $user_name );?></a></h4>
+								<?php } else{?>
+									<h4><?php echo esc_attr( $user_name );?></h4>
+								<?php }?>
+								<div class="tg-description">
+									<?php the_content(); ?>
+								</div>
+								<div class="tg-questionbottom">
+									<?php if (apply_filters('listingo_do_check_user_type', $answer_user_id) === true){?>
+										<?php if( intval( $answer_user_id ) !== intval( $current_user->ID ) ){?>
+											<a target="_blank" class="tg-btn" href="<?php echo esc_url($author_url); ?>"><?php esc_html_e('Consult Now', 'listingo'); ?> </a>
+										<?php }?>
+									<?php }?>
+									<?php fw_ext_get_total_votes_and_answers_html($post->ID,'yes');?>
+								</div>
+							</div>
+							<div class="tg-matadatahelpfull">
+								<?php fw_ext_get_views_and_time_html($post->ID,'yes');?>
+								<?php fw_ext_get_votes_html($post->ID,esc_html__('Was this answers helpful?', 'listingo'));?>
+							</div>
+						</div>
+					</div>
+				<?php
+				endwhile;
+				wp_reset_postdata();
+			   ?>
+			</div>
+		</div>
+	<?php } else{?>
+		<p><?php esc_html_e('No answered yet.', 'listingo'); ?></p>
+	<?php }?>
+</div>
+
