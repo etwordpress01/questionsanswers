@@ -9,19 +9,30 @@ global $wp_query, $current_user;
 $query_object = $wp_query->get_queried_object();
 
 $ques_id = $query_object->ID;
+$posts_per_page	= get_option('posts_per_page');
+
 $q_args = array(
     'post_type'   => 'sp_answers',
     'post_status' => 'publish',
 	'post_parent' => $ques_id,
-    'posts_per_page' => -1,
+    'posts_per_page' => $posts_per_page,
     'order' => 'DESC',
 );
+
+$t_args = array(
+    'post_type'   => 'sp_answers',
+    'post_status' => 'publish',
+	'post_parent' => $ques_id,
+    'posts_per_page' 	=> -1,
+);
+$t_query = new WP_Query($t_args);
+$total_posts	= $t_query->post_count;
 
 
 $q_query = new WP_Query($q_args);
 
 ?>
-<div class="tg-companyfeaturebox tg-answers">
+<div class="tg-companyfeaturebox tg-answers" data-q_id="<?php echo intval( $ques_id );?>">
 	<div class="tg-companyfeaturetitle">
 		<h3><?php esc_html_e('Answers', 'listingo'); ?></h3>
 	</div>
@@ -80,6 +91,11 @@ $q_query = new WP_Query($q_args);
 			   ?>
 			</div>
 		</div>
+		<?php if( $total_posts > $posts_per_page ){?>
+			<div class="tg-haslayout loadmore-wrap">
+				<a class="loadmore_a tg-btn"><?php esc_html_e('Load more..', 'listingo'); ?></a>
+			</div>
+        <?php }?>
 	<?php } else{?>
 		<p><?php esc_html_e('No answered yet.', 'listingo'); ?></p>
 	<?php }?>

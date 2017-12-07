@@ -321,6 +321,182 @@ if (!function_exists('listingo_set_question_views')) {
     add_action('sp_set_question_views', 'listingo_set_question_views', 2, 10);
 }
 
+
+/**
+ * @load more questions
+ */
+if (!function_exists('fw_ext_listingo_loadmore_questions')) {
+
+    function fw_ext_listingo_loadmore_questions() {
+        global $current_user, $wp_roles, $userdata,$wp_query;
+        $json = array();
+		$page_no	= !empty( $_POST['page'] ) ? esc_attr( $_POST['page'] ) : '';
+		$question_to	= !empty( $_POST['p_id'] ) ? esc_attr( $_POST['p_id'] ) : '';
+		$posts_per_page	= get_option('posts_per_page');
+
+		$q_args = array(
+			'post_type' 		=> 'sp_questions',
+			'post_status' 		=> 'publish',
+			'posts_per_page' 	=> $posts_per_page,
+			'paged' 			=> $page_no,
+		);
+		
+		$meta_query_args	= array();
+		$meta_query_args[] = array(
+			'key' 		=> 'question_to',
+			'value' 	=> $question_to,
+			'compare' 	=> '=',
+		);
+
+		$query_relation = array('relation' => 'AND',);
+		$meta_query_args = array_merge($query_relation, $meta_query_args);
+		$q_args['meta_query'] = $meta_query_args;
+		
+		$q_query = new WP_Query( $q_args );
+		
+		if ( $q_query->have_posts() ) :
+			while ($q_query->have_posts()) : $q_query->the_post();
+				global $post;
+				$question_by = get_post_meta($post->ID, 'question_by', true);
+				$question_to = get_post_meta($post->ID, 'question_to', true);
+				$category 	 = get_user_meta($question_to, 'category', true);
+	
+				$category_icon = '';
+				$category_color = '';
+				if (function_exists('fw_get_db_post_option') && !empty( $category )) {
+					$categoy_bg_img = fw_get_db_post_option($category, 'category_image', true);
+					$category_icon  = fw_get_db_post_option($category, 'category_icon', true);
+					$category_color = fw_get_db_post_option($category, 'category_color', true);
+				}
+				?>
+				<div class="tg-question">
+					<div class="tg-questioncontent">
+						<div class="tg-answerholder spq-v2">
+							<?php
+								if (isset($category_icon['type']) && $category_icon['type'] === 'icon-font') {
+									do_action('enqueue_unyson_icon_css');
+									if (!empty($category_icon['icon-class'])) {
+										?>
+										<figure class="tg-docimg"><span class="<?php echo esc_attr($category_icon['icon-class']); ?> tg-categoryicon" style="background: <?php echo esc_attr($category_color); ?>;"></span></figure>
+										<?php
+									}
+								} else if (isset($category_icon['type']) && $category_icon['type'] === 'custom-upload') {
+									if (!empty($category_icon['url'])) {
+										?>
+										<figure class="tg-docimg"><em><img src="<?php echo esc_url($category_icon['url']); ?>" alt="<?php esc_html_e('category', 'listingo'); ?>"></em></figure>
+										<?php
+									}
+								}
+							?>
+
+							<h4><a href="<?php echo esc_url(get_permalink()); ?>"> <?php echo esc_attr(get_the_title()); ?> </a></h4>
+							<div class="tg-description">
+								<p><?php listingo_prepare_excerpt('255','false');?></p>
+							</div>
+							<div class="tg-questionbottom">
+								<a class="tg-btn" href="<?php echo esc_url(get_permalink()); ?>">  <?php esc_html_e('Add/View Answers', 'listingo'); ?> </a>
+								<?php fw_ext_get_total_votes_and_answers_html($post->ID);?>
+							</div>
+						</div>
+					</div>
+					<div class="tg-matadatahelpfull">
+						<?php fw_ext_get_views_and_time_html($post->ID);?>
+						<?php fw_ext_get_votes_html($post->ID,esc_html__('Is this helpful?', 'listingo'));?>
+					</div>
+				</div>
+			<?php
+			endwhile;
+			wp_reset_postdata();
+		endif;
+        wp_die();
+
+    }
+
+    add_action('wp_ajax_fw_ext_listingo_loadmore_questions', 'fw_ext_listingo_loadmore_questions');
+    add_action('wp_ajax_nopriv_fw_ext_listingo_loadmore_questions', 'fw_ext_listingo_loadmore_questions');
+}
+
+/**
+ * @load more questions
+ */
+if (!function_exists('fw_ext_listingo_loadmore_answers')) {
+
+    function fw_ext_listingo_loadmore_answers() {
+        global $current_user, $wp_roles, $userdata;
+        $json = array();
+		$page_no	= !empty( $_POST['page'] ) ? esc_attr( $_POST['page'] ) : '';
+		$ques_id	= !empty( $_POST['q_id'] ) ? esc_attr( $_POST['q_id'] ) : '';
+		
+		$posts_per_page	= get_option('posts_per_page');
+		
+		$a_args = array(
+			'post_type'   => 'sp_answers',
+			'post_status' => 'publish',
+			'post_parent' 		=> $ques_id,
+			'posts_per_page' 	=> $posts_per_page,
+			'order' 			=> 'DESC',
+			'paged' 			=> $page_no,
+		);
+
+		$a_query = new WP_Query( $a_args );
+		
+		if ( $a_query->have_posts() ) :
+			while ($a_query->have_posts()) : $a_query->the_post();
+				global $post;
+				$answer_user_id = get_post_meta($post->ID, 'answer_user_id', true);				   
+				$user_avatar = apply_filters(
+						'listingo_get_media_filter', 
+						listingo_get_user_avatar(array('width' => 100, 'height' => 100), $answer_user_id), 
+						array('width' => 100, 'height' => 100) //size width,height
+					);
+
+				$user_name  = listingo_get_username($answer_user_id);
+				$author_url	= get_author_posts_url($answer_user_id);
+				?>
+				<div class="tg-answerholder">
+					<figure class="tg-docimg">
+						<?php if (apply_filters('listingo_do_check_user_type', $answer_user_id) === true){?>
+							<a target="_blank" href="<?php echo esc_url($author_url); ?>"><img src="<?php echo esc_attr( $user_avatar );?>" alt="<?php echo esc_attr( $user_name );?>"></a>
+						<?php } else{?>
+							<img src="<?php echo esc_attr( $user_avatar );?>" alt="<?php echo esc_attr( $user_name );?>">
+						<?php }?>
+					</figure>
+					<div class="tg-question">
+						<div class="tg-questioncontent">
+							<?php if (apply_filters('listingo_do_check_user_type', $answer_user_id) === true){?>
+								<h4><a target="_blank" href="<?php echo esc_url($author_url); ?>"><?php echo esc_attr( $user_name );?></a></h4>
+							<?php } else{?>
+								<h4><?php echo esc_attr( $user_name );?></h4>
+							<?php }?>
+							<div class="tg-description">
+								<?php the_content(); ?>
+							</div>
+							<div class="tg-questionbottom">
+								<?php if (apply_filters('listingo_do_check_user_type', $answer_user_id) === true){?>
+									<?php if( intval( $answer_user_id ) !== intval( $current_user->ID ) ){?>
+										<a target="_blank" class="tg-btn" href="<?php echo esc_url($author_url); ?>"><?php esc_html_e('Consult Now', 'listingo'); ?> </a>
+									<?php }?>
+								<?php }?>
+								<?php fw_ext_get_total_votes_and_answers_html($post->ID,'yes');?>
+							</div>
+						</div>
+						<div class="tg-matadatahelpfull">
+							<?php fw_ext_get_views_and_time_html($post->ID,'yes');?>
+							<?php fw_ext_get_votes_html($post->ID,esc_html__('Was this answers helpful?', 'listingo'));?>
+						</div>
+					</div>
+				</div>
+			<?php
+			endwhile;
+			wp_reset_postdata();
+		endif;
+        wp_die();
+
+    }
+
+    add_action('wp_ajax_fw_ext_listingo_loadmore_answers', 'fw_ext_listingo_loadmore_answers');
+    add_action('wp_ajax_nopriv_fw_ext_listingo_loadmore_answers', 'fw_ext_listingo_loadmore_answers');
+}
 /**
  * 
  */

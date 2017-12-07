@@ -12,7 +12,7 @@ global $current_user, $wp_query;
 //Get User Queried Object Data
 $queried_object = $wp_query->get_queried_object();
 
-$posts_per_page	= get_option('posts_per_page');
+$posts_per_page	= get_option('posts_per_page');;
 $q_args = array(
     'post_type' => 'sp_questions',
     'post_status' => 'publish',
@@ -31,6 +31,18 @@ $query_relation = array('relation' => 'AND',);
 $meta_query_args = array_merge($query_relation, $meta_query_args);
 $q_args['meta_query'] = $meta_query_args;
 
+
+//total posts
+$t_args = array(
+    'post_type' 		=> 'sp_questions',
+    'post_status' 		=> 'publish',
+    'posts_per_page' 	=> -1,
+    'order' => 'DESC',
+);
+$t_args['meta_query'] = $meta_query_args;
+$t_query = new WP_Query($t_args);
+$total_posts	= $t_query->post_count;
+
 $username = listingo_get_username($current_user->ID);
 $q_query = new WP_Query($q_args);
 
@@ -47,7 +59,7 @@ do_action('render_add_questions_view');
 </div>
 <div class="question-panel-wrap tg-haslayout">
 	<?php if ($q_query->have_posts()) {?>
-    <div class="tg-widgetrelatedposts sp-provider-articles">
+    <div class="tg-widgetrelatedposts sp-provider-articles" data-p_id="<?php echo esc_attr( $queried_object->ID );?>">
         <div class="questions-area tg-haslayout">
 		   <?php
 			while ($q_query->have_posts()) : $q_query->the_post();
@@ -104,6 +116,11 @@ do_action('render_add_questions_view');
 			wp_reset_postdata();
            ?>
         </div>
+        <?php if( $total_posts > $posts_per_page ){?>
+			<div class="tg-haslayout loadmore-wrap">
+				<a class="loadmore_q tg-btn"><?php esc_html_e('Load more..', 'listingo'); ?></a>
+			</div>
+        <?php }?>
     </div>
 	<?php } else{?>
 		<p><?php esc_html_e('No query answered yet.', 'listingo'); ?></p>
