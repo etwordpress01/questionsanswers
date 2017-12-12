@@ -66,7 +66,7 @@ do_action('render_add_questions_view');
 				global $post;
 				$question_by = get_post_meta($post->ID, 'question_by', true);
 				$question_to = get_post_meta($post->ID, 'question_to', true);
-				$category 	 = get_user_meta($question_to, 'category', true);
+				$category 	 = get_post_meta($post->ID, 'question_cat', true);
 	
 				$category_icon = '';
 				$category_color = '';

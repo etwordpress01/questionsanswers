@@ -57,6 +57,13 @@ if (!function_exists('fw_ext_listingo_process_questions')) {
 		
 		remove_all_filters("content_save_pre");
 		
+		if( !is_user_logged_in() ) {
+			$json['type'] = 'error';
+            $json['message'] = esc_html__('Please login before add your question.', 'listingo');
+            echo json_encode($json);
+            die;
+		}
+		
 		if( function_exists('listingo_is_demo_site') ) { 
 			listingo_is_demo_site() ;
 		}; //if demo site then prevent
@@ -68,7 +75,15 @@ if (!function_exists('fw_ext_listingo_process_questions')) {
             echo json_encode($json);
             die;
         }
-
+		
+		//if question is 
+		if ( isset($_POST['category']) && empty( $_POST['category'] ) ) {
+			$json['type'] = 'error';
+            $json['message'] = esc_html__('Question category is required.', 'listingo');
+            echo json_encode($json);
+            die;
+		}
+		
         if (empty($_POST['question_title'])) {
             $json['type'] = 'error';
             $json['message'] = esc_html__('Question title field should not be empty.', 'listingo');
@@ -91,7 +106,12 @@ if (!function_exists('fw_ext_listingo_process_questions')) {
 
         $post_id = wp_insert_post($questions_answers_post);
 		
-		$category 	 = get_user_meta($author_id, 'category', true);
+		if ( !empty($_POST['category']) ) {
+			$category 	 = intval( $_POST['category'] );
+		} else{
+			$category 	 = get_user_meta($author_id, 'category', true);
+		}
+		
         update_post_meta($post_id, 'question_to', $author_id);
         update_post_meta($post_id, 'question_by', $current_user->ID);
 		update_post_meta($post_id, 'question_cat', $category);
@@ -359,7 +379,7 @@ if (!function_exists('fw_ext_listingo_loadmore_questions')) {
 				global $post;
 				$question_by = get_post_meta($post->ID, 'question_by', true);
 				$question_to = get_post_meta($post->ID, 'question_to', true);
-				$category 	 = get_user_meta($question_to, 'category', true);
+				$category 	 = get_post_meta($post->ID, 'question_cat', true);
 	
 				$category_icon = '';
 				$category_color = '';

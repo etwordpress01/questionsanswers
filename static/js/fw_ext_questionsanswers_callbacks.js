@@ -2,6 +2,11 @@
 jQuery(document).on('ready', function () {
     var loader_html = '<div class="provider-site-wrap"><div class="provider-loader"><div class="bounce1"></div><div class="bounce2"></div><div class="bounce3"></div></div></div>';
 
+	jQuery(document).on("click","#ask_btn",function(){
+		var get_question = jQuery('#ask_search_question').val();
+		jQuery('.question_title').val(get_question);
+	});
+	
     /*************************************
      * Save Question Ajax Request
      ************************************/
@@ -12,7 +17,7 @@ jQuery(document).on('ready', function () {
         }
 
         var _this = jQuery(this);
-        var serialize_data = jQuery('.fw_ext_questions_form').serialize();
+        var serialize_data = _this.parents('.tg-add-questions').find('.fw_ext_questions_form').serialize();
         var dataString = serialize_data + '&action=fw_ext_listingo_process_questions';
         jQuery('body').append(loader_html);
         jQuery.ajax({
