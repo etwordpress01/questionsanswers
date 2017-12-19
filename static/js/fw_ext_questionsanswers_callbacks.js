@@ -17,8 +17,10 @@ jQuery(document).on('ready', function () {
         }
 
         var _this = jQuery(this);
+		var _type = _this.data('type');
         var serialize_data = _this.parents('.tg-add-questions').find('.fw_ext_questions_form').serialize();
-        var dataString = serialize_data + '&action=fw_ext_listingo_process_questions';
+        var dataString 	   = serialize_data + '&type='+_type+'&action=fw_ext_listingo_process_questions';
+		
         jQuery('body').append(loader_html);
         jQuery.ajax({
             type: "POST",

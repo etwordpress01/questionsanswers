@@ -50,10 +50,10 @@ if (!function_exists('_filter_fw_ext_get_render_answers_view')) {
 if (!function_exists('fw_ext_listingo_process_questions')) {
 
     function fw_ext_listingo_process_questions() {
-
         global $current_user, $wp_roles, $userdata;
         $provider_category = listingo_get_provider_category($current_user->ID);
         $json = array();
+		$type = !empty($_POST['type']) ? esc_attr($_POST['type']) : '';
 		
 		remove_all_filters("content_save_pre");
 		
@@ -76,8 +76,8 @@ if (!function_exists('fw_ext_listingo_process_questions')) {
             die;
         }
 		
-		//if question is 
-		if ( isset($_POST['category']) && empty( $_POST['category'] ) ) {
+		//if question is open
+		if ( isset($_POST['category']) && empty( $_POST['category'] ) && $type === 'open' ) {
 			$json['type'] = 'error';
             $json['message'] = esc_html__('Question category is required.', 'listingo');
             echo json_encode($json);
@@ -94,7 +94,8 @@ if (!function_exists('fw_ext_listingo_process_questions')) {
         $question_title = !empty($_POST['question_title']) ? esc_attr($_POST['question_title']) : esc_html__('unnamed', 'listingo');
         $question_detail = force_balance_tags($_POST['question_description']);
 
-        $author_id = !empty($_POST['author_id']) ? intval($_POST['author_id']) : '';
+        $author_id = !empty($_POST['author_id']) ? base64_decode($_POST['author_id']) : '';
+		
         $questions_answers_post = array(
             'post_title' 	=> $question_title,
             'post_status' 	=> 'publish',
@@ -115,6 +116,21 @@ if (!function_exists('fw_ext_listingo_process_questions')) {
         update_post_meta($post_id, 'question_to', $author_id);
         update_post_meta($post_id, 'question_by', $current_user->ID);
 		update_post_meta($post_id, 'question_cat', $category);
+		
+		if (class_exists('ListingoProcessEmail')) {
+            if( isset( $type ) && $type === 'closed' && !empty( $author_id ) ){
+				$email_helper = new ListingoProcessEmail();
+				$emailData	= array();
+				$emailData['user_id']			= $author_id;
+				$emailData['question_title']	= $question_title;
+				
+				//if method exist
+				if (method_exists($email_helper, 'process_question_email')){
+					$email_helper->process_question_email($emailData);
+				}
+            	
+			}	
+        }
 		
         $json['type'] = 'success';
         $json['message'] = esc_html__('Question submit successfully.', 'listingo');
@@ -171,11 +187,27 @@ if (!function_exists('fw_ext_listingo_process_answers')) {
 			'post_parent'	=> $question_id,
             'post_date' 	=> current_time('Y-m-d H:i:s')
         );
-
+		
         $post_id = wp_insert_post($questions_answers_post);
 
         update_post_meta($post_id, 'answer_question_id', $question_id);
         update_post_meta($post_id, 'answer_user_id', $current_user->ID);
+		
+		if (class_exists('ListingoProcessEmail')) {
+            $email_helper = new ListingoProcessEmail();
+			$emailData	= array();
+			$question_author = get_post_meta($question_id, 'question_by', true);
+			$emailData['answer_author']		= $current_user->ID;
+			$emailData['question_author']	= $question_author;
+			$emailData['question_title']	= get_the_title($question_id);
+			$emailData['link']				= get_the_permalink($question_id);
+			
+			//if method exist
+			if (method_exists($email_helper, 'process_answer_email')){
+				$email_helper->process_answer_email($emailData);
+			}
+        }
+
         $json['type'] = 'success';
         $json['message'] = esc_html__('Answer submitted successfully.', 'listingo');
         echo json_encode($json);

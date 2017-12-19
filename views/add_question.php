@@ -59,8 +59,8 @@ if (!empty($login_register['enable']['login_reg_page'])) {
 						</div>
 						<div class="tg-btns">
 							<?php wp_nonce_field('listingo_question_answers_nounce', 'listingo_question_answers_nounce'); ?>
-							<input type="hidden" name="author_id" value="<?php echo intval($author_id); ?>">
-							<button type="button" class="tg-btn tg-btnaddanswer fw_ext_question_save_btn"><?php esc_html_e('Submit Question', 'listingo'); ?></button>
+							<input type="hidden" name="author_id" value="<?php echo base64_encode($author_id); ?>">
+							<button type="button" class="tg-btn tg-btnaddanswer fw_ext_question_save_btn" data-type="closed"><?php esc_html_e('Submit Question', 'listingo'); ?></button>
 						</div>
 					</fieldset>
 				</form>
