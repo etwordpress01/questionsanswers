@@ -67,7 +67,7 @@ if (!empty($login_register['enable']['login_reg_page'])) {
 				<?php }?>
 		<?php } else{?>
 		<div class="login-to-add tg-haslayout">
-				<a class="tg-btn" href="<?php echo esc_url(get_permalink((int) $login_reg_link[0])); ?>"><?php esc_html_e('Login to add your answer', 'listingo'); ?></a>
+				<a class="tg-btn" href="<?php echo esc_url(get_permalink((int) $login_reg_link[0])); ?>"><?php esc_html_e('Login to add your question', 'listingo'); ?></a>
 			</div>
 		<?php }?>
 	</div>
