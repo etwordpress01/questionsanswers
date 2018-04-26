@@ -117,7 +117,7 @@ if (!function_exists('fw_ext_get_views_and_time_html')) {
 			<li>
 				<a href="javascript:;">
 					<i class="lnr lnr-calendar-full"></i>
-					<span><?php echo human_time_diff(strtotime($pfx_date), current_time('timestamp')) .'&nbsp;'. esc_html__('ago', 'listingo'); ?></span>
+					<span><?php echo human_time_diff(get_the_time( 'U' ), current_time('timestamp')) .'&nbsp;'. esc_html__('ago', 'listingo'); ?></span>
 				</a>
 			</li>
 		</ul>

@@ -30,9 +30,9 @@ jQuery(document).on('ready', function () {
             success: function (response) {
                 if (response.type == 'error') {
 					jQuery('body').find('.provider-site-wrap').remove();
-                    jQuery.sticky(response.message, {classList: 'important', speed: 200, autoclose: 5000});
+                    jQuery.sticky(response.message, {classList: 'important',position:'center-center', speed: 200, autoclose: 5000});
                 } else {
-                    jQuery.sticky(response.message, {classList: 'success', speed: 200, autoclose: 5000, position: 'top-right', });
+                    jQuery.sticky(response.message, {classList: 'success', speed: 200, autoclose: 5000 });
 					window.location.reload();
                 }
             }
@@ -60,9 +60,9 @@ jQuery(document).on('ready', function () {
             success: function (response) {
                 if (response.type == 'error') {
 					jQuery('body').find('.provider-site-wrap').remove();
-                    jQuery.sticky(response.message, {classList: 'important', speed: 200, autoclose: 5000});
+                    jQuery.sticky(response.message, {classList: 'important',position:'center-center', speed: 200, autoclose: 5000});
                 } else {
-                    jQuery.sticky(response.message, {classList: 'success', speed: 200, autoclose: 5000, position: 'top-right', });
+                    jQuery.sticky(response.message, {classList: 'success', speed: 200, autoclose: 5000 });
 					window.location.reload();
                 }
             }

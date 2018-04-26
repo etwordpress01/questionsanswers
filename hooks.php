@@ -68,6 +68,8 @@ if (!function_exists('fw_ext_listingo_process_questions')) {
 			listingo_is_demo_site() ;
 		}; //if demo site then prevent
 		
+		do_action('listingo_is_action_allow'); //is action allow
+		
         $do_check = check_ajax_referer('listingo_question_answers_nounce', 'listingo_question_answers_nounce', false);
         if ($do_check == false) {
             $json['type'] = 'error';
