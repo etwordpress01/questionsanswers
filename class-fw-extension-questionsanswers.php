@@ -171,7 +171,9 @@ class FW_Extension_QuestionsAnswers extends FW_Extension {
      * @Register Post Type
      */
     private function register_post_type() {
-
+		$question_slug	= listingo_get_theme_settings('question_slug');
+		$question_slug	=  !empty( $question_slug ) ? $question_slug : 'question';
+		
         register_post_type('sp_questions', array(
             'labels' => array(
                 'name' => esc_html__('Consult Q&A', 'listingo'),
@@ -199,7 +201,7 @@ class FW_Extension_QuestionsAnswers extends FW_Extension {
             'exclude_from_search' => true,
             'hierarchical' => true,
             'menu_position' => 10,
-            'rewrite' => array('slug' => 'question', 'with_front' => true),
+            'rewrite' => array('slug' => $question_slug, 'with_front' => true),
             'query_var' => true,
             'has_archive' => 'false'
         ));
