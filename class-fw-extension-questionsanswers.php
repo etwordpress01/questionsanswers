@@ -171,7 +171,10 @@ class FW_Extension_QuestionsAnswers extends FW_Extension {
      * @Register Post Type
      */
     private function register_post_type() {
-		$question_slug	= listingo_get_theme_settings('question_slug');
+		if( function_exists('listingo_get_theme_settings') ){
+			$question_slug	= listingo_get_theme_settings('question_slug');
+		}
+		
 		$question_slug	=  !empty( $question_slug ) ? $question_slug : 'question';
 		
         register_post_type('sp_questions', array(
