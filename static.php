@@ -23,6 +23,10 @@ if (!is_admin()) {
 					preg_match('/sp_post_questions/', $_post->post_content)
 					||
 					preg_match('/listingo_vc_post_questions/', $_post->post_content)
+					||
+					preg_match('/sp_search_questions/', $_post->post_content)
+					||
+					preg_match('/listingo_vc_search_question/', $_post->post_content)
 				)
 			) {
 				wp_enqueue_script('fw_ext_questionsanswers_callback');

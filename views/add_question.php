@@ -14,15 +14,7 @@ $queried_object = $wp_query->get_queried_object();
 $author_id = $queried_object->ID;
 
 //Authentication page
-$login_register = '';
-$login_reg_link = '#';
-if (function_exists('fw_get_db_settings_option')) {
-	$login_register = fw_get_db_settings_option('enable_login_register');
-}
-
-if (!empty($login_register['enable']['login_reg_page'])) {
-	$login_reg_link = $login_register['enable']['login_reg_page'];
-}
+$auth_page	= listingo_get_login_registration_page_uri();
 ?>
 <div class="tg-askquestion">
 	<span class="tg-questionicon">
@@ -66,8 +58,8 @@ if (!empty($login_register['enable']['login_reg_page'])) {
 				</form>
 				<?php }?>
 		<?php } else{?>
-		<div class="login-to-add tg-haslayout">
-				<a class="tg-btn" href="<?php echo esc_url(get_permalink((int) $login_reg_link[0])); ?>"><?php esc_html_e('Login to add your question', 'listingo'); ?></a>
+			<div class="login-to-add tg-haslayout">
+				<a class="tg-btn" href="<?php echo esc_url($auth_page); ?>"><?php esc_html_e('Login to add your question', 'listingo'); ?></a>
 			</div>
 		<?php }?>
 	</div>
