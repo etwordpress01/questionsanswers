@@ -14,7 +14,26 @@ $queried_object = $wp_query->get_queried_object();
 $author_id = $queried_object->ID;
 
 //Authentication page
-$auth_page	= listingo_get_login_registration_page_uri();
+if( function_exists('listingo_get_login_registration_page_uri') ){
+	$auth_page	= listingo_get_login_registration_page_uri();
+} else{
+	$login_register = '';
+	$login_reg_link = '#';
+	if (function_exists('fw_get_db_settings_option')) {
+		$login_register = fw_get_db_settings_option('enable_login_register');
+	}
+
+	if (!empty($login_register['enable']['login_reg_page'])) {
+		$login_reg_link = $login_register['enable']['login_reg_page'];
+	}
+
+	if( !empty( $login_reg_link[0] ) ){
+		$auth_page	= get_permalink((int) $login_reg_link[0]);
+	} else{
+		$auth_page	= '#';
+	}	
+}
+
 ?>
 <div class="tg-askquestion">
 	<span class="tg-questionicon">
