@@ -102,14 +102,16 @@ do_action('render_add_questions_view');
 							</div>
 							<div class="tg-questionbottom">
 								<a class="tg-btn" href="<?php echo esc_url(get_permalink()); ?>">  <?php esc_html_e('Add/View Answers', 'listingo'); ?> </a>
-								<?php fw_ext_get_total_votes_and_answers_html($post->ID);?>
+								<?php if (function_exists('fw_ext_get_total_votes_and_answers_html')) {fw_ext_get_total_votes_and_answers_html($post->ID); }?>
 							</div>
 						</div>
 					</div>
+					<?php if (function_exists('fw_ext_get_views_and_time_html')) {?>
 					<div class="tg-matadatahelpfull">
 						<?php fw_ext_get_views_and_time_html($post->ID);?>
 						<?php fw_ext_get_votes_html($post->ID,esc_html__('Is this helpful?', 'listingo'));?>
 					</div>
+					<?php }?>
 				</div>
 			<?php
 			endwhile;

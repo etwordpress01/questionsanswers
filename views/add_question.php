@@ -54,18 +54,9 @@ if( function_exists('listingo_get_login_registration_page_uri') ){
 						</div>
 						<div class="form-group">
 							<?php
-							$content = '';
-							$settings = array(
-								'editor_class' => 'question_description',
-								'teeny' => true,
-								'media_buttons' => false,
-								'textarea_rows' => 10,
-								'wpautop' => true,
-								'quicktags' => true,
-								'editor_height' => 300,
-							);
-
-							wp_editor($content, 'question_description', $settings);
+								$content = '';
+								$settings = array('media_buttons' => false);
+								wp_editor($content, 'question_description', $settings);
 							?>
 						</div>
 						<div class="tg-btns">

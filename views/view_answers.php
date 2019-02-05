@@ -76,13 +76,15 @@ $q_query = new WP_Query($q_args);
 											<a target="_blank" class="tg-btn" href="<?php echo esc_url($author_url); ?>"><?php esc_html_e('Consult Now', 'listingo'); ?> </a>
 										<?php }?>
 									<?php }?>
-									<?php fw_ext_get_total_votes_and_answers_html($post->ID,'yes');?>
+									<?php if( function_exists('fw_ext_get_total_votes_and_answers_html') ){ fw_ext_get_total_votes_and_answers_html($post->ID,'yes');}?>
 								</div>
 							</div>
-							<div class="tg-matadatahelpfull">
-								<?php fw_ext_get_views_and_time_html($post->ID,'yes');?>
-								<?php fw_ext_get_votes_html($post->ID,esc_html__('Was this answers helpful?', 'listingo'));?>
-							</div>
+							<?php if( function_exists('fw_ext_get_views_and_time_html') ){?>
+								<div class="tg-matadatahelpfull">
+									<?php fw_ext_get_views_and_time_html($post->ID,'yes');?>
+									<?php fw_ext_get_votes_html($post->ID,esc_html__('Was this answers helpful?', 'listingo'));?>
+								</div>
+							<?php }?>
 						</div>
 					</div>
 				<?php
