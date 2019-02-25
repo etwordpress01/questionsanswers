@@ -10,7 +10,7 @@ class FW_Extension_QuestionsAnswers extends FW_Extension {
      * @internal
      */
     public function _init() {
-        $this->register_post_type();
+        add_action('init',array(&$this,'register_post_type'));
 		add_filter( 'manage_edit-sp_answers_columns', array(&$this,'cpt_answer_columns') );
 		add_action( 'manage_sp_answers_posts_custom_column', array(&$this,'cpt_answer_row_actions'), 10, 2 );
 		
@@ -170,7 +170,7 @@ class FW_Extension_QuestionsAnswers extends FW_Extension {
      * @access Private
      * @Register Post Type
      */
-    private function register_post_type() {
+    public function register_post_type() {
 		if( function_exists('listingo_get_theme_settings') ){
 			$question_slug	= listingo_get_theme_settings('question_slug');
 		}
