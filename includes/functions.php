@@ -110,14 +110,14 @@ if (!function_exists('fw_ext_get_views_and_time_html')) {
         ob_start();
         ?>
         <ul class="tg-postmatadata">
-        <?php if ($skip_views === 'no') { ?>
-                <li>
-                    <a href="javascript:;">
-                        <i class="lnr lnr-eye"></i>
-                        <span><?php echo intval($question_views); ?>&nbsp;<?php esc_html_e('views', 'listingo'); ?></span>
-                    </a>
-                </li>
-        <?php } ?>
+			<?php if ($skip_views === 'no') { ?>
+				<li>
+					<a href="javascript:;">
+						<i class="lnr lnr-eye"></i>
+						<span><?php echo intval($question_views); ?>&nbsp;<?php esc_html_e('views', 'listingo'); ?></span>
+					</a>
+				</li>
+			<?php } ?>
             <li>
                 <a href="javascript:;">
                     <i class="lnr lnr-calendar-full"></i>

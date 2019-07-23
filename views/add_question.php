@@ -55,7 +55,7 @@ if( function_exists('listingo_get_login_registration_page_uri') ){
 						<div class="form-group">
 							<?php
 								$content = '';
-								$settings = array('media_buttons' => false,'quicktags' => false);
+								$settings = array('media_buttons' => false,'quicktags' => true);
 								wp_editor($content, 'question_description', $settings);
 							?>
 						</div>
